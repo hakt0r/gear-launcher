@@ -8,6 +8,7 @@ $ -> requestAnimationFrame ->
   new Mode.shell
   new Mode.rename
   new Mode.hide
+  new Mode.kill
   new App.ViewMode
-  do clock
+  do App.clock
   API.notify 1, "gear started", 'android not so sucky after all?'
