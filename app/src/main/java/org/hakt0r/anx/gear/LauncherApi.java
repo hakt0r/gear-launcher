@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
+import android.util.Log;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.JavascriptInterface;
@@ -67,8 +68,7 @@ public class LauncherApi {
     private Boolean setupDirs(){
         return exec("mkdir -p /data/local/gear/scripts /data/local/gear/run"); }
 
-    @JavascriptInterface
-    public String getTasks() {
+    @JavascriptInterface public String getTasks() {
         final ActivityManager activityManager = (ActivityManager) mContext
                 .getSystemService(ACTIVITY_SERVICE);
         final List<ActivityManager.RunningTaskInfo> recentTasks =
@@ -96,40 +96,37 @@ public class LauncherApi {
         return true; }
 
     @JavascriptInterface public int notify( int mId, String title, String text ) {
-        NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
-        Intent intent = new Intent(mContext.getApplicationContext(), Launcher.class);
-        PendingIntent pi = PendingIntent.getActivity(mContext, 0, intent, 0);
-        Notification n = new Notification.Builder(mContext)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setSmallIcon(gear_logo)
-                .setContentIntent(pi)
-                .build();
-        mNotificationManager.notify(mId, n); return mId; }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
+            Intent intent = new Intent(mContext.getApplicationContext(), Launcher.class);
+            PendingIntent pi = PendingIntent.getActivity(mContext, 0, intent, 0);
+            Notification n = null;
+            n = new Notification.Builder(mContext)
+                    .setContentTitle(title)
+                    .setContentText(text)
+                    .setSmallIcon(gear_logo)
+                    .setContentIntent(pi)
+                    .build();
+            mNotificationManager.notify(mId, n); return mId; }
+         else return -1; }
 
     @JavascriptInterface public Boolean runScript( String script ) {
-        int duration = Toast.LENGTH_SHORT; Toast toast = Toast.makeText(mContext, script, duration); toast.show();
         try {
             Runtime.getRuntime().exec("su -c /data/local/gear/scripts/" + script);
             return true;
         } catch (IOException e) { return false; }}
 
-    @JavascriptInterface public Boolean runToggle( String script ) {
+    @JavascriptInterface public Boolean runToggle( String script ) throws IOException {
         File file  = new File("/data/local/gear/scripts/" + script);
         if ( !file.exists() ) return false;
         File state = new File("/data/local/gear/run/" + script );
         if ( !state.exists() ){
-            exec("/data/local/gear/scripts/" + script + ".start");
-            exec("touch /dat/local/gear/run/" + script);
-        } else {
-            exec("/data/local/gear/scripts/" + script + ".stop");
-            exec("rm /dat/local/gear/run/" + script); }
+            exec("sh /data/local/gear/scripts/" + script + " start");
+            exec("touch /data/local/gear/run/" + script); }
+        else {
+            exec("sh /data/local/gear/scripts/" + script + " stop");
+            exec("rm /data/local/gear/run/" + script); }
         return true;}
-
-    @JavascriptInterface public Boolean callbackTest() {
-        view.post(new Runnable() { @Override public void run() {
-            view.eval("console.log('ok');"); } });
-        return true; }
 
     @JavascriptInterface public String getScripts() {
         File f = new File("/data/local/gear/scripts");
@@ -173,6 +170,4 @@ public class LauncherApi {
     @JavascriptInterface public Boolean kill( String packageName ) {
         ActivityManager am = (ActivityManager) mContext.getSystemService(ACTIVITY_SERVICE);
         am.killBackgroundProcesses(packageName);
-        return true; }
-
-}
+        return true; }}
