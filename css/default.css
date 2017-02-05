@@ -1,0 +1,50 @@
+body{ background: black; }
+
+#background {
+  position: fixed;z-index: -1;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+
+  text-align: center; opacity: .2;}
+
+#background>img {
+  display: block;
+
+  height: 50%; margin: 20% auto;}
+
+*{color: white;  font-family: sans-serif; font-size: 16px; font-weight: bold; }
+
+textarea{
+  border:none;
+  outline: none;
+
+  font-size: 14px;
+
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  -webkit-tap-highlight-color: transparent; }
+
+.launcher>a{display: inline-block;margin: 5px; padding: 6px 10px;  text-decoration: none; border: solid 1px rgba(64,0,0,.6); border-radius: 5px;
+  background-color: rgba(64,64,64,.4); }
+a[active="true"]{ background-color: rgba(64,0,0,.4); }
+a[hide="true"]{display: none;  background-color: red; }
+.launcher>a {font-size: 1em;  line-height: 2em; }
+.launcher>a>* { vertical-align: top;}
+.launcher>a>i, .launcher a>img { height: 1em; width: 1em; padding-right: 5px; font-size: 2em; }
+.launcher.unhide a[hide="true"] { display: inline-block; }
+.launcher.hideicons a>i, .launcher.hideicons a>img { display: none; padding-right: 0; }
+.launcher a[state="true"]  { background-color: rgba(0,64,0,0.8); }
+.launcher a[state="false"] { background-color: rgba(64,0,0,0.8); }
+.launcher.hidenames a[icon="true"] span { display: none; }
+.launcher.hidenames a[icon="true"] i, .launcher.hidenames a[icon="true"] img { padding-right: 0; }
+#launch{
+  width:100%;
+  padding-bottom: 300px;text-align: justify;
+  padding-top: 100px;
+  padding-left: 10px;
+}
+#actions{position: fixed; bottom: 0; left:0;  width:100%; min-height: 50px; background: rgba(64,0,0,.9); }
+#actions b#mode {position: absolute; z-index: -1;top:0; right:0; bottom: 0; left:0;
+
+  width:100%; text-align: center; opacity: 0.3; color:#555;font-size:72px; }

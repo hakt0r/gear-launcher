@@ -1,0 +1,33 @@
+{
+  "name": "gear-launcher",
+  "version": "0.1.5",
+  "description": "gear launcher for android",
+  "main": "js/index.js",
+  "scripts": {
+    "test": "js/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hakt0r/gear-launcher.git"
+  },
+  "keywords": [
+    "gear",
+    "launcher",
+    "android",
+    "nodejs",
+    "coffee",
+    "webview"
+  ],
+  "author": "Sebastian Glaser",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/hakt0r/gear-launcher/issues"
+  },
+  "homepage": "https://github.com/hakt0r/gear-launcher#readme",
+  "dependencies": {
+    "coffee-script": "^1.11.1",
+    "font-awesome": "^4.7.0",
+    "glyphicons": "^0.2.0",
+    "jquery": "^3.1.1"
+  }
+}
