@@ -12,6 +12,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import static org.hakt0r.anx.gear.R.*;
+
 public class Launcher extends AppCompatActivity {
     private LauncherApi api;
     private GEARWebView view;
@@ -19,7 +21,7 @@ public class Launcher extends AppCompatActivity {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(layout.activity_main);
 
         GEARWebView mainWebView;
         WebSettings webSettings;
@@ -27,7 +29,7 @@ public class Launcher extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true); }
 
-        mainWebView = view = (GEARWebView) findViewById(R.id.mainWebView);
+        mainWebView = view = (GEARWebView) findViewById(id.mainWebView);
         assert mainWebView != null;
 
         mainWebView.setWebViewClient(new GEARWebViewClient());
@@ -45,11 +47,7 @@ public class Launcher extends AppCompatActivity {
 
         mainWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
 
-        mainWebView.loadUrl("file:///android_asset/html/index.html");
-
-        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.toggleSoftInput (InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-    }
+        mainWebView.loadUrl("file:///android_asset/html/index.html"); }
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         assert view != null;

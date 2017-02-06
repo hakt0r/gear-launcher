@@ -4,7 +4,8 @@ android:launchMode="singleInstance"
 android:orientation="vertical"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent">
-<org.hakt0r.anx.gear.GEARWebView android:layout_width="match_parent"
+<org.hakt0r.anx.gear.GEARWebView
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"

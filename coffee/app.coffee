@@ -4,13 +4,13 @@ window.ICON  = try JSON.parse localStorage.getItem('app_icon')  || {} catch e th
 window.basename = (a)-> a.replace(/.*\./,'')
 
 window.App = (pkg,opts={})->
-  active = opts.active || false
-  toggle = opts.toggle || false
-  hide = if opts.hide? then opts.hide else App.prefs.get(pkg,'hide') is true
   name = opts.name || API.appName pkg
   if ( exists = ( link = App.list[pkg] )? ) is false
     ico = 'fa-dollar' unless ( ico = API.appIcon pkg ) isnt '' and ico isnt null
     App.list[pkg] = link = Button class:'app', name:name, icon:ico
+  active = opts.active || false
+  toggle = opts.toggle || false
+  hide = if opts.hide? then opts.hide else App.prefs.get(pkg,'hide') is true
   link.attr "icon",   ico isnt ''
   link.attr "toggle", toggle
   link.attr "active", active
@@ -92,7 +92,7 @@ App.scripts = ->
   null
 
 App.running = ->
-  $('a.app').removeClass 'down'
+  $('a.app').attr 'active', false
   for l in JSON.parse API.getTasks()
     [ proc, activity ] = l.replace("{",'').replace("}",'').split('/')
     App proc, active: true

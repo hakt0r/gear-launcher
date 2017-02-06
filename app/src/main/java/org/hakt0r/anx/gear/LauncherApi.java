@@ -14,20 +14,18 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
-import android.util.Log;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static android.content.Context.ACTIVITY_SERVICE;
-import static android.content.Context.INPUT_METHOD_SERVICE;
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static org.hakt0r.anx.gear.R.drawable.gear_logo;
 
@@ -36,7 +34,10 @@ public class LauncherApi {
     Context mContext;
     Launcher launcher;
     ActivityManager activity_manager;
-    public LauncherApi(Context c, GEARWebView v, Launcher l) { mContext = c; view = v; launcher = l; setupDirs(); }
+    public LauncherApi(Context c, GEARWebView v, Launcher l) {
+        mContext = c; view = v; launcher = l;
+        toggle = new HashMap<String, Boolean>();
+        setupDirs(); }
 
     public static Bitmap drawableToBitmap (Drawable drawable) {
         Bitmap bitmap = null;
@@ -66,7 +67,10 @@ public class LauncherApi {
         } catch (IOException e) { return false; }}
 
     private Boolean setupDirs(){
-        return exec("mkdir -p /data/local/gear/scripts /data/local/gear/run"); }
+        exec("mkdir -p /data/local/gear/scripts /data/local/gear/run /data/local/gear/icons");
+        exec("chmod -R 755 /data/local/gear");
+        exec("chmod -R 777 /data/local/gear/icons");
+        return true; }
 
     @JavascriptInterface public String getTasks() {
         final ActivityManager activityManager = (ActivityManager) mContext
@@ -78,6 +82,13 @@ public class LauncherApi {
         sb.append("[\""); sb.append(recentTasks.get(0).baseActivity.toShortString());
         for (int i = 1; i < len; i++) {
             sb.append("\",\""); sb.append(recentTasks.get(i).baseActivity.toShortString()); }
+        Iterator it = toggle.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String,Boolean> pair;
+            pair = (Map.Entry)it.next();
+            if ( pair.getValue() == true ){
+                Object pkg = pair.getKey();
+                sb.append("\",\""); sb.append("{script."+pkg+"/*}"); }}
         sb.append("\"]");
         return sb.toString(); }
 
@@ -116,16 +127,17 @@ public class LauncherApi {
             return true;
         } catch (IOException e) { return false; }}
 
+    private HashMap<String, Boolean> toggle;
+
     @JavascriptInterface public Boolean runToggle( String script ) throws IOException {
         File file  = new File("/data/local/gear/scripts/" + script);
         if ( !file.exists() ) return false;
-        File state = new File("/data/local/gear/run/" + script );
-        if ( !state.exists() ){
+        if ( !toggle.containsKey(script) || !toggle.get(script)){
             exec("sh /data/local/gear/scripts/" + script + " start");
-            exec("touch /data/local/gear/run/" + script); }
+            toggle.put(script,true); }
         else {
             exec("sh /data/local/gear/scripts/" + script + " stop");
-            exec("rm /data/local/gear/run/" + script); }
+            toggle.put(script,false); }
         return true;}
 
     @JavascriptInterface public String getScripts() {
@@ -156,6 +168,8 @@ public class LauncherApi {
         return (String) (applicationInfo != null ? packageManager.getApplicationLabel(applicationInfo) : "Unknown"); }
 
     @JavascriptInterface public String getAppIcon(String packageName) {
+        String path = "/data/local/gear/icons/" + packageName + ".png";
+        File   file = new File(path); if (file.exists()){ return "file://" + path; }
         Drawable ico = null;
         PackageManager packageManager = mContext.getPackageManager();
         try { ico = packageManager.getApplicationIcon(packageName);
@@ -167,7 +181,6 @@ public class LauncherApi {
         if (launchIntent != null) { mContext.startActivity(launchIntent); return true; }
         return false; }
 
-    @JavascriptInterface public Boolean kill( String packageName ) {
-        ActivityManager am = (ActivityManager) mContext.getSystemService(ACTIVITY_SERVICE);
-        am.killBackgroundProcesses(packageName);
+    @JavascriptInterface public Boolean kill( final String packageName ) {
+        exec("am force-stop " + packageName);
         return true; }}

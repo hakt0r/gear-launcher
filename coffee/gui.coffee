@@ -41,6 +41,6 @@ window.Menu = class Menu
 
 Menu.init = ->
   window.MAIN = new Menu id:'main', title:'g.e.a.r.', items:
-    reload: title:"reload", icon:"fa-reload", click:(e)-> window.location = "?reload"
+    reload: title:"reload", icon:"fa-refresh", click:(e)-> window.location = "?reload"
   MAIN.show()
   do App.onResize.launcher

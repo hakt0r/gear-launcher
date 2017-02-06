@@ -15,7 +15,7 @@ else
   API.isTouchDevice = yes
 
 API.appIcon = (pkg) ->
-  return n if n = ICON[pkg]
+  # return n if n = ICON[pkg]
   ICON[pkg] = n = API.getAppIcon pkg
   do API.saveAppIcons
   n

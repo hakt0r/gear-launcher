@@ -51,12 +51,15 @@ class Mode.hide extends Mode
 
 class Mode.kill extends Mode
   title: 'kill'
-  icon:'fa-kill'
+  icon:'fa-window-close'
   activate:->
+    $('#launch').addClass 'activeOnly'
     $('a.btn.app').each (idx,me)-> me = $ me; Button.click me, (e)->
-        API.toast 'kill ' + me.attr 'pkg'
-        API.kill(pkg)
+      pkg = me.attr 'pkg'
+      API.toast 'kill ' + pkg
+      API.kill(pkg)
   deactivate:->
+    $('#launch').removeClass 'activeOnly'
 
 class Mode.rename extends Mode
   title: 'rename'
