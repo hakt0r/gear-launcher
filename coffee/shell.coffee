@@ -1,42 +1,56 @@
 
-
+$(window).on 'home_key', -> do App.shell.toggle
+$(window).on 'key keydown keyup', ->
+  console.log arguments
 
 class Mode.shell extends Mode
   title: 'shell'
   icon: 'fa-dollar'
 
   constructor:->
+    App.shell = @
 
-    App.onResize['shell'] = ->
-      a.css "width", ( w.width() - 10 ) + 'px'
+    $(window).on 'visible invisible resize', @resize = =>
+      if @active
+        @field$.focus();
+        do API.showKeyboard
+        @field$.css "width", ( @window$.width() - 10 ) + 'px'
+        $("#launch").css 'paddingTop', @window$.height() + 'px'
+        $(window).once 'back_key.Shell', @deactivate
+      else
+        do API.hideKeyboard
+        $("#launch").css 'paddingTop', '100px'
+        $(window).off 'back_key.Shell'
 
-    @activate = ->
-      w.css 'display', 'initial'
-      $("#shell textarea").focus();
-      API.showKeyboard()
-      $("#launch").css 'paddingTop', w.height() + 'px'
-      do App.onResize['shell']
+    @reset = =>
+      @field$.val('')
+      $("#launch>a").each (k,a)-> a.setAttribute 'score', null
+
+    @activate = =>
+      @active = yes
+      @window$.css 'display', 'initial'
+      do @reset
+      do @resize
 
     @deactivate = =>
-      @field$.val('')
-      $("#launch").css 'paddingTop', '100px'
-      w.css 'display', 'none'; API.hideKeyboard()
-      $("#launch>a").each (k,a)-> a.setAttribute 'score', null
-      do App.onResize['shell']
+      @active = no
+      @window$.css 'display', 'none'
+      do @reset
+      do @resize
 
-    $("head").append w = $ """<style>
-      #shell { width:100%; position: fixed; top: 0; left:0; height: 15%; min-height: 15%; background: rgba(64,0,0,.9); }
+    $("head").append @css$ = $ """<style>
+      #shell { width:100%; position: fixed; top: 0; left:0; height: 2em; min-height: 2em; background: rgba(64,0,0,.9); }
       #shell textarea { position: absolute; bottom: 5px; left:5px; top:5px; right:10px; text-align: left; color:#555;font-size:12px;
       background: rgba(64,0,0,.9); };
     </style>"""
 
-    $("body").append w = $ """<div id=shell style="display:none"></div>"""
+    $("body").append @window$ = $ """<div id=shell style="display:none"></div>"""
 
     super
 
     @kmap = {}
 
-    w.append a = @field$ = $ """<textarea type=text></textarea>"""
+    @window$.append @field$ = $ """<textarea type=text></textarea>"""
     @field$.on 'keydown', (evt)=>
       seq =
         ( if evt.shiftKey then 'S' else '' ) +
@@ -49,7 +63,6 @@ class Mode.shell extends Mode
       @kmap.default()
 
     @field$.on 'blur',  => @field$.focus()
-    @field$.focus()
 
     $(window).on 'focus', => @field$.focus()
     $(window).on 'blur',  => @field$.focus()
@@ -82,6 +95,8 @@ class Mode.shell extends Mode
       S40: @last          # shift-down
       default: @default
     null
+
+  toggle:-> if @active then do @deactivate else do @activate
 
   null:->
 

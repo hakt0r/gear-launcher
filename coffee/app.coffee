@@ -59,10 +59,9 @@ class App.ViewMode
     do @apply
 
 
-App.onResize = -> call key for k, call of App.onResize.list
+$(window).on 'resize', App.onResize = -> call key for key, call of App.onResize.list
 App.onResize.list = {}
-$ -> $(window).on 'resize', App.onResize
-App.onResize.launcher = ->
+App.onResize.list.launcher = ->
   $("#launch").css 'paddingBottom', $("#actions").height() + 'px'
 
 App.prefs = {}
@@ -80,15 +79,12 @@ if null is PREFS then API.toast "FAIL!!"
 
 App.list = ->
   for l in JSON.parse API.getApps()
-    App l, active: false
-  null
-
-App.scripts = ->
-  for l in JSON.parse API.getScripts()
-    if l.match(/\.toggle$/)
-      name = l.replace(/\.toggle$/)
-      App 'script.' + l, toggle:true, active:false, name:name
-    else App 'script.' + l, active:false
+    if l.match /^script\./
+      name = l.replace(/\.(toggle|script)$/,'').replace(/^script\./,'')
+      if l.match(/\.toggle$/)
+        App l, toggle:true, active:false, name:name
+      else App l, active:false
+    else App l, active: false
   null
 
 App.running = ->

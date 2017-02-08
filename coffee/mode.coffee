@@ -9,16 +9,13 @@ window.Mode = class Mode
       Mode.default.activate()
       Mode.current = Mode.default
       $("#mode").html Mode.default.title
+      $(window).off('back_key.Mode')
     else
       Mode.default.deactivate() if Mode.default
       @activate Mode.current = @constructor
       $("#mode").html @title
-    Sort.current.activate()
-
-class Mode.modifier extends Mode
-  toggle:=>
-    if @active is true then @deactivate @active = false
-    else @activate @active = true
+      $(window).once 'back_key.Mode',=> do @toggle
+      $(window).trigger 'resize', 'mode', @
     Sort.current.activate()
 
 class Mode.launch extends Mode
@@ -26,7 +23,6 @@ class Mode.launch extends Mode
   activate: ->
     MAIN.show()
     do App.running
-    do App.scripts
     $('#launch > a').each (idx,el)->
       pkg = el.getAttribute 'pkg'
       Button.click $(el), App.launchCallback pkg

@@ -1,7 +1,7 @@
 $ -> requestAnimationFrame ->
   do Menu.init
   do App.list
-  do App.scripts
+  do App.running
   Sort.current = Sort.default = new Sort
   Mode.default = new Mode.launch menu:false
   Mode.default.toggle()

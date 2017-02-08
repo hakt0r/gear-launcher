@@ -7,7 +7,6 @@ unless API? then window.API = {
   getAppName: (p)-> x = "com.android.browser":"Browser", "com.android.dialer":"Phone", 'script.test123':"Test Script"; x[p]
   getAppIcon: (p)-> null
   getTasks: -> JSON.stringify ['{com.android.browser/fefe}']
-  getScripts: -> JSON.stringify ['test123']
   toast: -> console.log 'toast', arguments[0]
   notify: -> console.log 'notify', arguments[0]
   launch: -> console.log 'launch', arguments[0] }
@@ -27,7 +26,7 @@ API.saveAppIcons = ->
   null
 
 API.appName = (pkg) ->
-  return n if n = NAME[pkg]
+  # return n if n = NAME[pkg]
   return pkg.replace(/script./,'') if pkg.match /^script/
   n = API.getAppName pkg
   API.saveAppName pkg, ( if "Unknown" is n then basename pkg else n )
@@ -44,3 +43,12 @@ API.saveAppPrefs = ->
   API.saveAppPrefs.lock = true
   setTimeout ( -> localStorage.setItem 'app_prefs', JSON.stringify PREFS; API.saveAppPrefs.lock = false ),100
   null
+
+$::once = (ev,fn)-> $$ = @; @off(ev).on ev, -> fn.apply $$, arguments; $$.off ev
+
+$(window).on 'syskey', (e,key)-> return switch key
+  when 'menu' then $(window).trigger 'menu_key'
+  when 'back' then $(window).trigger 'back_key'
+  when 'home' then $(window).trigger 'home_key'
+
+do API.hideKeyboard

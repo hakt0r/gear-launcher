@@ -1,6 +1,7 @@
 package org.hakt0r.anx.gear;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -49,6 +50,9 @@ public class Launcher extends AppCompatActivity {
 
         mainWebView.loadUrl("file:///android_asset/html/index.html"); }
 
+    @Override protected void onNewIntent(Intent intent) {
+        view.post(new Runnable() { @Override public void run() { view.newIntentRecieved(); }});}
+
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         assert view != null;
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -62,18 +66,17 @@ public class Launcher extends AppCompatActivity {
 
     public Boolean showKeyboard() {
         assert view != null;
-        view.requestFocus();
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         InputMethodManager mgr = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         mgr.showSoftInput(view, InputMethodManager.SHOW_FORCED);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        view.requestFocus();
         return true; }
 
     public Boolean hideKeyboard() {
         assert view != null;
-        // view.requestFocus();
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
-                WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         InputMethodManager mgr = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM, WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         return true; }}
