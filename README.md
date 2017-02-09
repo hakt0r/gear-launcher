@@ -9,9 +9,9 @@
   - Icon/Title or Mixed View
 
 ### Installation
-  Download APK here, or rebuild with Android Studio (or gradle)
+  Download APK [here](https://github.com/hakt0r/gear-launcher/releases/), or rebuild with Android Studio (or gradle)
 
-  ![alt tag](https://raw.githubusercontent.com/hakt0r/gear-launcher/master/img/screenshot.png)
+  ![screenshot](https://raw.githubusercontent.com/hakt0r/gear-launcher/master/img/screenshot.png)
 
 ### Adding scripts
   Any located files in **/data/local/gear/scripts** will be made available
