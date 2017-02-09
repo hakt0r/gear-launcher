@@ -9,3 +9,4 @@
 .externalNativeBuild
 js/*
 node_modules
+app/app-release.apk

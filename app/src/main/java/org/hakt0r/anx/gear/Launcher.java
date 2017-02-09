@@ -1,11 +1,9 @@
 package org.hakt0r.anx.gear;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -13,7 +11,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import static org.hakt0r.anx.gear.R.*;
+import static org.hakt0r.anx.gear.R.id;
+import static org.hakt0r.anx.gear.R.layout;
 
 public class Launcher extends AppCompatActivity {
     private LauncherApi api;

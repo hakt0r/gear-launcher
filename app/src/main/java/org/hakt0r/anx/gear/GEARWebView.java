@@ -1,13 +1,9 @@
 package org.hakt0r.anx.gear;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 
 public class GEARWebView extends WebView {
