@@ -1,4 +1,20 @@
-
+###
+ * Copyright (C) 2017 Sebastian Glaser <anx@ulzq.de>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+###
 
 window.Button = (opts)->
   b = $  "<a class=\"btn #{opts.class || ''}\" href=\"#\"><span>#{opts.name}<span></a>"
@@ -18,7 +34,7 @@ Button.click = (b, action)->
     $('body').css 'background', 'red'; Button.lock = true
     setTimeout ( (e)->
       $('body').css 'background', 'black'; Button.lock = false
-    ), 100; action e
+    ), 10; action e
     null
   else b.on 'click', ( (e)-> e.preventDefault(); action arguments[0]; )
   null
@@ -56,8 +72,12 @@ window.Menu = class Menu
     do @deactivate
     do Menu.reset
 
-Menu.show = -> @active = yes; @frame$.show()
-Menu.hide = -> @active = no;  @frame$.hide() #; @reset()
+Menu.show = ->
+  @active = yes; @frame$.show()
+  do App.onResize
+Menu.hide = ->
+  @active = no;  @frame$.hide() #; @reset()
+  do App.onResize
 Menu.toggle = -> if @active then @hide() else @show()
 Menu.reset = -> if Menu.current isnt MAIN
   dontHideMenuBar = ( Menu.current || dontHideMenuBar:false ).dontHideMenuBar

@@ -1,7 +1,34 @@
+###
+ * Copyright (C) 2017 Sebastian Glaser <anx@ulzq.de>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+###
 
 $(window).on 'home_key', -> do App.shell.toggle
 $(window).on 'key keydown keyup', ->
   console.log arguments
+
+App.onResize.list.launcher = ->
+  t = b = 0
+  b += $("#actions").height() if Menu.active
+  t += $("#shell").height()   if App.shell? and App.shell.active
+  t += Dialog.frame$.height() if Dialog? and Dialog.current
+  s = $(window).height()
+  h = Math.max 10, parseInt ( s - t - b - $('#launch').height() ) / 2
+  $("#launch").css 'paddingTop',    ( if t > 0 then t + 10 else h ) + 'px'
+  $("#launch").css 'paddingBottom', ( if b > 0 then b + 10 else h ) + 'px'
 
 class Mode.shell extends Mode
   title: 'shell'
@@ -16,11 +43,9 @@ class Mode.shell extends Mode
         @field$.focus();
         do API.showKeyboard
         @field$.css "width", ( @window$.width() - 10 ) + 'px'
-        $("#launch").css 'paddingTop', @window$.height() + 'px'
         $(window).once 'back_key.Shell', @deactivate
       else
         do API.hideKeyboard
-        $("#launch").css 'paddingTop', '100px'
         $(window).off 'back_key.Shell'
 
     @reset = =>
