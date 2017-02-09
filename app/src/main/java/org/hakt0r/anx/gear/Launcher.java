@@ -51,7 +51,9 @@ public class Launcher extends AppCompatActivity {
         mainWebView.loadUrl("file:///android_asset/html/index.html"); }
 
     @Override protected void onNewIntent(Intent intent) {
-        view.post(new Runnable() { @Override public void run() { view.newIntentRecieved(); }});}
+        if ( intent.getSelector() != null && intent.getSelector().hasCategory(Intent.CATEGORY_APP_CALCULATOR) ){
+            view.post(new Runnable() { @Override public void run() { view.eval("$(window).trigger('hotkey_1')"); }});
+        } else view.post(new Runnable() { @Override public void run() { view.newIntentRecieved(); }});}
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         assert view != null;

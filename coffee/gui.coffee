@@ -31,8 +31,6 @@ window.Menu = class Menu
     @frame$ = $ """<div id="menu_#{opts.id}" class="launcher actions menu"></div>"""
     @frame$.hide()
     $('#actions').append @frame$
-    @show = @frame$.show.bind @frame$
-    @hide = @frame$.hide.bind @frame$
     @item = {}
     @add k, v for k,v of opts.items
     null
@@ -40,30 +38,36 @@ window.Menu = class Menu
     @frame$.append @item[k] = Button name:v.title||k, click:v.click, icon:v.icon
     setTimeout App.onResize, 0
     return @[k]
+  remove:->
+    do Menu.reset
+    do @frame$.remove
   activate:->
     try Menu.current.hide()
     Menu.current = @
     @active = yes
     @frame$.show()
+  deactivate:->
+    @active = no
+    @frame$.hide()
   show:->
     do @activate
     do Menu.show
   hide:->
-    @active = no
-    @frame$.hide()
-    Menu.current = Menu.stack.shift() || MAIN
-    Menu.hide()
+    do @deactivate
+    do Menu.reset
 
-Menu.stack = []
 Menu.show = -> @active = yes; @frame$.show()
-Menu.hide = -> @active = no;  @frame$.hide(); @reset()
+Menu.hide = -> @active = no;  @frame$.hide() #; @reset()
 Menu.toggle = -> if @active then @hide() else @show()
-Menu.reset = -> if @current isnt MAIN
-  try @current.hide()
-  MAIN.show()
-  @current = MAIN
-  Menu.stack = [MAIN]
-  @
+Menu.reset = -> if Menu.current isnt MAIN
+  dontHideMenuBar = ( Menu.current || dontHideMenuBar:false ).dontHideMenuBar
+  try
+    unless dontHideMenuBar
+      do Menu.hide
+      @active = no
+    do Menu.current.deactivate
+  do MAIN.activate
+  Menu
 
 Menu.init = ->
   Menu.frame$ = $('#actions')
@@ -71,3 +75,52 @@ Menu.init = ->
     reload: title:"reload", icon:"fa-refresh", click:(e)-> window.location = "?reload"
   $(window).on 'menu_key', -> Menu.toggle()
   do App.onResize
+
+
+
+window.Dialog = class Dialog
+  constructor:(opts={})->
+    @[k] = v for k,v of opts
+    @title = @title || "Untitled"
+    $('body').append @frame$ = $ """<div class=dialog></div>"""
+    @frame$.append @title$ = $ """<div class=title>#{@title}</div>"""
+    @frame$.append @body$ = $ """<div class=body></div>"""
+    @menu = new Menu title:@title, id:@id, items:
+        close: title:"close", icon:"fa-window-close", click: => do @remove
+    do @menu.show
+    do @show
+  remove:->
+    do @hide
+    do @frame$.remove
+  show:->
+    App.shell.otherFocus = yes
+    Dialog.current.hide() if Dialog.current
+    Dialog.current = @
+    do @frame$.show
+  hide:->
+    App.shell.otherFocus = no
+    Dialog.current = false if Dialog.current is @
+    do @frame$.hide
+    do @menu.remove
+
+Dialog.current = false
+
+class Dialog.Rename extends Dialog
+  constructor:(@pkg,@value)->
+    super title: "Rename " + @pkg, id:'rename'
+    @type = @type || 'text'
+    @body$.append @field$ = $ """<input type="#{@type}" />"""
+    @field$.val(@value||'')
+    @menu.dontHideMenuBar = yes
+    @menu.add 'ok', title:"OK", icon:'fa-check', default:true, click:=>
+      NAME[@pkg] = name = @field$.val()
+      $("""[pkg="#{@pkg}"]""").attr('name',name)
+      $("""[pkg="#{@pkg}"] span""").html(name)
+      API.saveAppName @pkg, name
+      do @remove
+    do @field$.focus
+    do API.showKeyboard
+    null
+  hide:->
+    do API.hideKeyboard
+    super

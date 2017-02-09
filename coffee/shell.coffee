@@ -11,6 +11,7 @@ class Mode.shell extends Mode
     App.shell = @
 
     $(window).on 'visible invisible resize', @resize = =>
+      return if @otherFocus
       if @active
         @field$.focus();
         do API.showKeyboard
@@ -40,8 +41,7 @@ class Mode.shell extends Mode
 
     $("head").append @css$ = $ """<style>
       #shell { width:100%; position: fixed; top: 0; left:0; height: 2em; min-height: 2em; background: rgba(64,0,0,.9); }
-      #shell textarea { position: absolute; bottom: 5px; left:5px; top:5px; right:10px; text-align: left; color:#555;font-size:12px;
-      background: rgba(64,0,0,.9); };
+      #shell textarea { position: absolute; bottom: 5px; left:5px; top:5px; right:10px; text-align: left; }
     </style>"""
 
     $("body").append @window$ = $ """<div id=shell style="display:none"></div>"""
@@ -62,10 +62,9 @@ class Mode.shell extends Mode
       return evt.preventDefault() if ( fn = @kmap[seq] ) and not fn() is true
       @kmap.default()
 
-    @field$.on 'blur',  => @field$.focus()
-
-    $(window).on 'focus', => @field$.focus()
-    $(window).on 'blur',  => @field$.focus()
+    $(window).on 'focus', => @field$.focus() if @active
+    $(window).on 'blur',  => @field$.focus() if @active
+    @field$.on   'blur',  => @field$.focus() if @active
 
     @default = (e)=> @default.action = true
 

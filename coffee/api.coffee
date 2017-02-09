@@ -14,7 +14,7 @@ else
   API.isTouchDevice = yes
 
 API.appIcon = (pkg) ->
-  # return n if n = ICON[pkg]
+  return n if n = ICON[pkg]
   ICON[pkg] = n = API.getAppIcon pkg
   do API.saveAppIcons
   n
@@ -26,7 +26,7 @@ API.saveAppIcons = ->
   null
 
 API.appName = (pkg) ->
-  # return n if n = NAME[pkg]
+  return n if n = NAME[pkg]
   return pkg.replace(/script./,'') if pkg.match /^script/
   n = API.getAppName pkg
   API.saveAppName pkg, ( if "Unknown" is n then basename pkg else n )
