@@ -27,13 +27,13 @@ window.Mode = class Mode
       Mode.default.activate()
       Mode.current = Mode.default
       $("#mode").html Mode.default.title
-      $(window).off('back_key.Mode')
+      window$.off('back_key.Mode')
     else
       Mode.default.deactivate() if Mode.default
       @activate Mode.current = @constructor
       $("#mode").html @title
-      $(window).once 'back_key.Mode',=> do @toggle
-      $(window).trigger 'resize', 'mode', @
+      window$.once 'back_key.Mode',=> do @toggle
+      window$.trigger 'resize', 'mode', @
     Sort.current.activate()
 
 class Mode.launch extends Mode

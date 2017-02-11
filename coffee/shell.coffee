@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ###
 
-$(window).on 'home_key', -> do App.shell.toggle
-$(window).on 'key keydown keyup', ->
+window$.on 'home_key', -> do App.shell.toggle
+window$.on 'key keydown keyup', ->
   console.log arguments
 
 App.onResize.list.launcher = ->
@@ -25,7 +25,7 @@ App.onResize.list.launcher = ->
   b += $("#actions").height() if Menu.active
   t += $("#shell").height()   if App.shell? and App.shell.active
   t += Dialog.frame$.height() if Dialog? and Dialog.current
-  s = $(window).height()
+  s = window$.height()
   h = Math.max 10, parseInt ( s - t - b - $('#launch').height() ) / 2
   $("#launch").css 'paddingTop',    ( if t > 0 then t + 10 else h ) + 'px'
   $("#launch").css 'paddingBottom', ( if b > 0 then b + 10 else h ) + 'px'
@@ -37,16 +37,16 @@ class Mode.shell extends Mode
   constructor:->
     App.shell = @
 
-    $(window).on 'visible invisible resize', @resize = =>
+    window$.on 'visible invisible resize', @resize = =>
       return if @otherFocus
       if @active
         @field$.focus();
         do API.showKeyboard
         @field$.css "width", ( @window$.width() - 10 ) + 'px'
-        $(window).once 'back_key.Shell', @deactivate
+        window$.once 'back_key.Shell', @deactivate
       else
         do API.hideKeyboard
-        $(window).off 'back_key.Shell'
+        window$.off 'back_key.Shell'
 
     @reset = =>
       @field$.val('')
@@ -87,8 +87,8 @@ class Mode.shell extends Mode
       return evt.preventDefault() if ( fn = @kmap[seq] ) and not fn() is true
       @kmap.default()
 
-    $(window).on 'focus', => @field$.focus() if @active
-    $(window).on 'blur',  => @field$.focus() if @active
+    window$.on 'focus', => @field$.focus() if @active
+    window$.on 'blur',  => @field$.focus() if @active
     @field$.on   'blur',  => @field$.focus() if @active
 
     @default = (e)=> @default.action = true

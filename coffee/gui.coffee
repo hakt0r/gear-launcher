@@ -93,7 +93,7 @@ Menu.init = ->
   Menu.frame$ = $('#actions')
   window.MAIN = Menu.current = new Menu id:'main', title:'g.e.a.r.', items:
     reload: title:"reload", icon:"fa-refresh", click:(e)-> window.location = "?reload"
-  $(window).on 'menu_key', -> Menu.toggle()
+  window$.on 'menu_key', -> Menu.toggle()
   do App.onResize
 
 

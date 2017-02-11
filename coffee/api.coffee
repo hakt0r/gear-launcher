@@ -64,9 +64,11 @@ API.saveAppPrefs = ->
 
 $::once = (ev,fn)-> $$ = @; @off(ev).on ev, -> fn.apply $$, arguments; $$.off ev
 
-$(window).on 'syskey', (e,key)-> return switch key
-  when 'menu' then $(window).trigger 'menu_key'
-  when 'back' then $(window).trigger 'back_key'
-  when 'home' then $(window).trigger 'home_key'
+window.window$ = $ window
+
+window$.on 'syskey', (e,key)-> return switch key
+  when 'menu' then window$.trigger 'menu_key'
+  when 'back' then window$.trigger 'back_key'
+  when 'home' then window$.trigger 'home_key'
 
 do API.hideKeyboard

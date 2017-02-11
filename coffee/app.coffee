@@ -77,7 +77,7 @@ class App.ViewMode
     do @apply
 
 
-$(window).on 'resize', App.onResize = -> call key for key, call of App.onResize.list
+window$.on 'resize', App.onResize = -> call key for key, call of App.onResize.list
 App.onResize.list = {}
 
 App.prefs = {}
@@ -116,16 +116,14 @@ App.clock = ->
   $("body").prepend c
   c.text ( new Date ).toTimeString().replace(/\ .*/,'')
   timer = null
-  disengage = -> clearInterval timer; console.log 'disengaged'
-  do engage = ->
-    console.log 'engaged'
-    timer = setInterval ( -> requestAnimationFrame ->
+  window$.on 'visible', engage = ->
+    clearTimeout timer;
+    requestAnimationFrame ->
       c.text ( new Date ).toTimeString().replace(/\ .*/,'')
       do App.running
-  ), 1000
-  w =  $ window
-  w.on 'invisible',  disengage
-  w.on 'visible', engage
+      timer = setTimeout engage, 1000
+  window$.on 'invisible', disengage = -> clearTimeout timer; console.log 'disengaged'
+  do engage
   c
 
 class window.Sort
